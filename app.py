@@ -8,14 +8,14 @@ import numpy as np
 app = Flask(__name__)
 
 def readFile(fileName):
-	df = pd.read_csv(fileName, parse_dates = True, index_col = 0, skiprows=[0])
+	df = pd.read_csv(fileName, parse_dates = True, index_col = 0)
 	df.head()
 	return df
 
 @app.route('/')
 def index():
 	humidity = readFile('sensor-values/humidity_living-room_log_2017.csv')
-	temperature = readFile('sensor-values/humidity_living-room_log_2017.csv')
+	temperature = readFile('sensor-values/temperature_living-room_log_2017.csv')
 
 	print "mensajito1" + str(humidity.index)
 	print "mensajito2" + str(humidity)
@@ -25,7 +25,7 @@ def index():
 			data=[
 				dict(
 					x=humidity.index,  # Can use the pandas data structures directly
-					y=humidity
+					y=humidity['relative_humidity']
 				)
 			],
 			layout=dict(
@@ -36,7 +36,7 @@ def index():
 			data=[
 				dict(
 					x=temperature.index,  # Can use the pandas data structures directly
-					y=temperature
+					y=temperature['temperature_in_celsius']
 				)
 			],
 			layout=dict(
