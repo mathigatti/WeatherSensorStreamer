@@ -1,1 +1,5 @@
-# weather_sensor_streamer
+# Weather Sensor Streamer
+
+Website running on raspberry pi server, temperature and humidity sensors connected to the microcontroller record data which is then plotted in the frontend with Plotly and Flask python libraries.
+
+You can check the website at http://mgatti.sytes.net
