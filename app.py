@@ -1,9 +1,9 @@
 from flask import Flask, render_template
 import Adafruit_DHT  
 import pandas as pd
-import matplotlib.pyplot as plt
-
-import csv
+import json
+import plotly
+import numpy as np
 
 app = Flask(__name__)
 
@@ -17,45 +17,48 @@ def index():
 	humidity = readFile('sensor-values/humidity_living-room_log_2017.csv')
 	temperature = readFile('sensor-values/humidity_living-room_log_2017.csv')
 
-	humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 4)
+	print "mensajito1" + str(humidity.index)
+	print "mensajito2" + str(humidity)
 
-    graphs = [
-        dict(
-            data=[
-                dict(
-                    x=humidity.index,  # Can use the pandas data structures directly
-                    y=humidity
-                )
-            ],
-            layout=dict(
-                title='Historic Humidity'
-            )
-        ),
-        dict(
-            data=[
-                dict(
-                    x=temperature.index,  # Can use the pandas data structures directly
-                    y=temperature
-                )
-            ],
-            layout=dict(
-                title='Historic Temperature'
-            )
-        )
-    ]
+	graphs = [
+		dict(
+			data=[
+				dict(
+					x=humidity.index,  # Can use the pandas data structures directly
+					y=humidity
+				)
+			],
+			layout=dict(
+				title='Historic Humidity'
+			)
+		),
+		dict(
+			data=[
+				dict(
+					x=temperature.index,  # Can use the pandas data structures directly
+					y=temperature
+				)
+			],
+			layout=dict(
+				title='Historic Temperature'
+			)
+		)
+	]
 
-    # Add "ids" to each of the graphs to pass up to the client
-    # for templating
-    ids = ['graph-{}'.format(i) for i, _ in enumerate(graphs)]
+	# Add "ids" to each of the graphs to pass up to the client
+	# for templating
+	ids = ['graph-{}'.format(i) for i, _ in enumerate(graphs)]
 
-    # Convert the figures to JSON
-    # PlotlyJSONEncoder appropriately converts pandas, datetime, etc
-    # objects to their JSON equivalents
-    graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+	# Convert the figures to JSON
+	# PlotlyJSONEncoder appropriately converts pandas, datetime, etc
+	# objects to their JSON equivalents
+	graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
 
+	humidity_last, temperature_last = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302, 4)
+	
 	return render_template('layouts/index.html',
                            ids=ids,
-                           graphJSON=graphJSON, humidity=humidity, temperature=temperature)
+                           graphJSON=graphJSON, humidity=humidity_last, temperature=temperature_last)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=80)
+	app.run(debug=True, host='0.0.0.0', port=80)
